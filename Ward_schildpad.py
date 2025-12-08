@@ -1,92 +1,95 @@
-import random
 import turtle as t
-from turtle import *
 import time
-import tkinter as Tk
+from typing import Tuple, List
 
-
+#create text writer
+writer: t.Turtle = t.Turtle()
+writer.hideturtle()
+writer.penup()
+writer.color("white")
 
 #visuals
-bgcolor("black")
-title("Snake")
-delay(0)
-setup(width=1.0, height=1.0)
-Screen()
+t.bgcolor("black")
+t.title("Snake")
+t.delay(0)
+t.setup(width=1.0, height=1.0)
+t.Screen()
 screen = t.Screen()
 
 #name turtles
-t=Turtle()
-t1=Turtle()
+player1: t.Turtle = t.Turtle()
+player2: t.Turtle = t.Turtle()
 
 #turtle display
-t.showturtle()
-t1.showturtle()
-t.shape("turtle")
-t1.shape("turtle")
-t.width(15)
-t1.width(15)
-t.color("#ff33cc")
-t1.color("#00ff00")
-t.shapesize(1.5, 1.5, 3)
-t1.shapesize(1.5, 1.5, 3)
+player1.showturtle()
+player2.showturtle()
+player1.shape("turtle")
+player2.shape("turtle")
+player1.width(15)
+player2.width(15)
+player1.color("#ff33cc")
+player2.color("#00ff00")
+player1.shapesize(1.5, 1.5, 3)
+player2.shapesize(1.5, 1.5, 3)
 
 #pen array
-pen = []
-pen1 = []
+pen: List[Tuple[int, int]] = []
+pen1: List[Tuple[int, int]] = []
 
 #move to start
-t.penup()
-t1.penup()
-t.goto(750, 500)
-t1.goto(-750,-400)
-t.setheading(180)
-t.pendown()
-t1.pendown()
+player1.penup()
+player2.penup()
+player1.goto(740, 500)
+player2.goto(-740, -400)
+player1.setheading(180)
+player2.setheading(0)
+player1.pendown()
+player2.pendown()
 
 #player1 movement
-def w():
-    t.setheading(90)
-def a():
-    t.setheading(180)
-def s():
-    t.setheading(270)
-def d():
-    t.setheading(0)
+def w() -> None:
+    player1.setheading(90)
+def a() -> None:
+    player1.setheading(180)
+def s() -> None:
+    player1.setheading(270)
+def d() -> None:
+    player1.setheading(0)
 
-onkey(w,'w')
-onkey(s, 's')
-onkey(a, 'a')
-onkey(d, 'd')
+t.onkey(w,'w')
+t.onkey(s, 's')
+t.onkey(a, 'a')
+t.onkey(d, 'd')
 
 #player2 movement
-def up():
-    t1.setheading(90)
-def left():
-    t1.setheading(180)
-def down():
-    t1.setheading(270)
-def right():
-    t1.setheading(0)
+def up() -> None:
+    player2.setheading(90)
+def left() -> None:
+    player2.setheading(180)
+def down() -> None:
+    player2.setheading(270)
+def right() -> None:
+    player2.setheading(0)
 
-onkey(up,'Up')
-onkey(down, 'Down')
-onkey(left, 'Left')
-onkey(right, 'Right')
+t.onkey(up,'Up')
+t.onkey(down, 'Down')
+t.onkey(left, 'Left')
+t.onkey(right, 'Right')
 
 #hit detection
-def hit(player, pen, pen1):
-    x = player.xcor()
-    y = player.ycor()
+def hit(player: t.Turtle, pen: List[Tuple[int, int]], pen1: List[Tuple[int, int]]) -> bool:
+    x: float = player.xcor()
+    y: float = player.ycor()
 
     #raken eigen pen
 
     for pos in pen:
-        if abs(x - pos[0]) <15 and abs (y- pos[1]) <15:
+        if abs(x - pos[0]) < 15 and abs(y - pos[1]) < 15:
             return True
         
     #ander pen raken
     for pos in pen1:
-        if abs(x - pos[0]) <15 and abs (y - pos[1]) <15:
+        if abs(x - pos[0]) < 15 and abs(y - pos[1]) < 15:
             return True
     # Buiten scherm
     if x < -screen.window_width()//2 or x > screen.window_width()//2 or \
@@ -95,27 +98,41 @@ def hit(player, pen, pen1):
 
     return False
 
-def start():
+def start() -> None:
     while True:
-        pen.append((round (t.xcor()), round(t.ycor())))      
-        pen1.append((round (t1.xcor()), round(t1.ycor())))
+        pen.append((round (player1.xcor()), round(player1.ycor())))      
+        pen1.append((round (player2.xcor()), round(player2.ycor())))
 
-        t.stamp()
-        t1.stamp()
-
-        t.forward(20)
-        t1.forward(20)
+        player1.forward(20)
+        player2.forward(20)
+        
+        time.sleep(0.1)
         
         #use hit detection
-        if hit(pen, t, t1):
-            print('Het spel is afgelopen')
+        if hit(player1, pen, pen1):
+            writer.goto(0, 0)
+            writer.write("Het spel is afgelopen", align="center", font=("Arial", 24, "normal"))
             time.sleep(3)
-            t.bye()
+            writer.clear()
+            reset_game()
             
-        if hit(pen1, t, t1):
-            print('Het spel is afgelopen')
+        if hit(player2, pen, pen1):
+            writer.goto(0, 0)
+            writer.write("Het spel is afgelopen", align="center", font=("Arial", 24, "normal"))
             time.sleep(3)
-            t1.bye()
+            writer.clear()
+            reset_game()
 
-listen()
+def reset_game() -> None:
+    global pen, pen1
+    pen.clear()
+    pen1.clear()
+    player1.goto(740, 500)
+    player2.goto(-740, -400)
+    player1.setheading(180)
+    player2.setheading(0)
+    player1.clear()
+    player2.clear()
+
+screen.listen()
 start()
